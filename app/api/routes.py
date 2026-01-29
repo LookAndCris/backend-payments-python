@@ -1,0 +1,54 @@
+from fastapi import APIRouter, Depends, status, HTTPException
+from app.api.schemas import CreatePaymentRequest, PaymentResponse
+from app.application.dto import CreatePaymentCommand
+from app.application.use_cases import CreatePayment
+
+
+router = APIRouter()
+
+@router.post(
+    "/payments",
+    response_model=PaymentResponse,
+    status_code=status.HTTP_201_CREATED
+)
+def create_payment(
+    request: CreatePaymentRequest,
+    use_case: CreatePayment = Depends(get_create_payment_use_case)
+):
+    command = CreatePaymentCommand(
+        amount=request.amount,
+        currency=request.currency,
+        description=request.description,
+        idempotency_key=request.idempotency_key
+    )
+
+    payment = use_case.execute(command)
+
+    return PaymentResponse(
+        id=payment.id,
+        amount=payment.amount,
+        currency=payment.currency,
+        description=payment.description,
+        status=payment.status.value
+    )
+
+@router.get(
+    "/payments/{payment_id}",
+    response_model=PaymentResponse
+)
+def get_payment(
+    payment_id: str,
+    use_case: GetPayment = Depends(get_get_payment_use_case)
+):
+    try:
+        payment = use_case.execute(payment_id)
+    except PaymentNotFound:
+        raise HTTPException(status_code=404, detail="Payment not found")
+
+    return PaymentResponse(
+        id=payment.id,
+        amount=payment.amount,
+        currency=payment.currency,
+        description=payment.description,
+        status=payment.status.value
+    )
