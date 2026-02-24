@@ -2,6 +2,7 @@
 
 ## Project Structure
 
+```
 backend-payments-python/
 │
 ├── app/
@@ -42,3 +43,4 @@ backend-payments-python/
 ├── pyproject.toml
 ├── Makefile
 └── README.md
+```

@@ -1,8 +1,12 @@
 from fastapi import APIRouter, Depends, status, HTTPException
 from app.api.schemas import CreatePaymentRequest, PaymentResponse
 from app.application.dto import CreatePaymentCommand
-from app.application.use_cases import CreatePayment
-
+from app.application.use_cases import CreatePayment, GetPayment
+from app.api.dependencies import (
+    get_create_payment_use_case,
+    get_get_payment_use_case,
+)
+from app.domain.exceptions import PaymentNotFound
 
 router = APIRouter()
 
