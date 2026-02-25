@@ -8,9 +8,9 @@ class CreatePayment:
     def __init__(self, repository: PaymentRepository):
         self.repository = repository
 
-    def execute(self, command: CreatePaymentCommand) -> Payment:
+    async def execute(self, command: CreatePaymentCommand) -> Payment:
 
-        existing = self.repository.get_by_idempotency_key(
+        existing = await self.repository.get_by_idempotency_key(
             command.idempotency_key
             )
 
@@ -24,15 +24,15 @@ class CreatePayment:
         idempotency_key=command.idempotency_key,
     )
 
-        self.repository.save(payment)
+        await self.repository.save(payment)
         return payment  
 
 class GetPayment:
     def __init__(self, repository: PaymentRepository):
         self.repository = repository
 
-    def execute(self, payment_id: str) -> Payment:
-        payment = self.repository.get_by_id(payment_id)
+    async def execute(self, payment_id: str) -> Payment:
+        payment = await self.repository.get_by_id(payment_id)
 
         if not payment:
             raise PaymentNotFound(f"Payment {payment_id} not found")

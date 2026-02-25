@@ -15,7 +15,7 @@ router = APIRouter()
     response_model=PaymentResponse,
     status_code=status.HTTP_201_CREATED
 )
-def create_payment(
+async def create_payment(
     request: CreatePaymentRequest,
     use_case: CreatePayment = Depends(get_create_payment_use_case)
 ):
@@ -26,7 +26,7 @@ def create_payment(
         idempotency_key=request.idempotency_key
     )
 
-    payment = use_case.execute(command)
+    payment = await use_case.execute(command)
 
     return PaymentResponse(
         id=payment.id,
@@ -40,12 +40,12 @@ def create_payment(
     "/payments/{payment_id}",
     response_model=PaymentResponse
 )
-def get_payment(
+async def get_payment(
     payment_id: str,
     use_case: GetPayment = Depends(get_get_payment_use_case)
 ):
     try:
-        payment = use_case.execute(payment_id)
+        payment = await use_case.execute(payment_id)
     except PaymentNotFound:
         raise HTTPException(status_code=404, detail="Payment not found")
 
