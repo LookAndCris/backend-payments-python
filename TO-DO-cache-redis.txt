@@ -1,0 +1,5 @@
+Cache-aside pattern
+
+request →
+    cache hit → responder
+    cache miss → DB → guardar en cache → responder
