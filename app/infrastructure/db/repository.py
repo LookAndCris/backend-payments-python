@@ -2,12 +2,14 @@ from typing import Optional
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError
 
 from app.domain.models import Payment, PaymentStatus
 from app.domain.repositories import PaymentRepository
 
 from .models import PaymentORM
 from .session import AsyncSessionLocal
+from app.infrastructure.db import session
 
 
 class PostgresPaymentRepository(PaymentRepository):
@@ -26,7 +28,13 @@ class PostgresPaymentRepository(PaymentRepository):
             )
 
             session.add(orm_obj)
-            await session.commit()
+            
+            try:
+                await session.commit()
+            except IntegrityError:
+                await session.rollback()
+                # Sí alguien ganó la carrera de idempotencia, dejamos que el use case lo maneje
+            raise
 
     async def get_by_id(self, payment_id: str) -> Optional[Payment]:
         async with self._session_factory() as session:

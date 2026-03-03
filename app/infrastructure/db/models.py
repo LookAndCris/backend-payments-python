@@ -1,4 +1,4 @@
-from sqlalchemy import String, Integer
+from sqlalchemy import String, Integer, Index
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .session import Base
@@ -17,3 +17,7 @@ class PaymentORM(Base):
         nullable=False,
         unique=True,  # idempotencia real
     )
+    __table_args__ = (
+        Index("idx_idempotency_key", "status"),
+    )
+    
