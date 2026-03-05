@@ -1,32 +1,37 @@
 import time
 import logging
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 logger = logging.getLogger(__name__)
 
 
-class TimingMiddleware(BaseHTTPMiddleware):
+class TimingMiddleware:
 
-    async def dispatch(self, request: Request, call_next):
+    def __init__(self, app: ASGIApp):
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send):
+
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
         start = time.perf_counter()
 
-        response = await call_next(request)
+        async def send_wrapper(message):
 
-        duration = (time.perf_counter() - start) * 1000
+            if message["type"] == "http.response.start":
 
-        logger.info(
-            f"request_completed path={request.url.path} "
-            f"method={request.method} duration_ms={round(duration, 2)}"
-        )
+                duration = (time.perf_counter() - start) * 1000
 
-        # logger.info(
-        #     "request_completed",
-        #     extra={
-        #         "path": request.url.path,
-        #         "method": request.method,
-        #         "duration_ms": round(duration, 2),
-        #     },
-        # )
+                path = scope["path"]
+                method = scope["method"]
 
-        return response
+                logger.info(
+                    f"request_completed path={path} "
+                    f"method={method} duration_ms={round(duration, 2)}"
+                )
+
+            await send(message)
+
+        await self.app(scope, receive, send_wrapper)

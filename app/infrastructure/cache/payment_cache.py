@@ -9,7 +9,12 @@ class PaymentCache:
     PREFIX = "payment:"
 
     async def get(self, payment_id: str) -> Optional[Payment]:
+
+        if redis_client is None:
+            return None
+
         data = await redis_client.get(self.PREFIX + payment_id)
+
         if not data:
             return None
 
@@ -25,14 +30,20 @@ class PaymentCache:
         )
 
     async def set(self, payment: Payment, ttl: int = 300) -> None:
-        payload = json.dumps({
-            "id": payment.id,
-            "amount": payment.amount,
-            "currency": payment.currency,
-            "description": payment.description,
-            "status": payment.status.value,
-            "idempotency_key": payment.idempotency_key,
-        })
+
+        if redis_client is None:
+            return
+
+        payload = json.dumps(
+            {
+                "id": payment.id,
+                "amount": payment.amount,
+                "currency": payment.currency,
+                "description": payment.description,
+                "status": payment.status.value,
+                "idempotency_key": payment.idempotency_key,
+            }
+        )
 
         await redis_client.set(
             self.PREFIX + payment.id,

@@ -9,7 +9,6 @@ from app.domain.repositories import PaymentRepository
 
 from .models import PaymentORM
 from .session import AsyncSessionLocal
-from app.infrastructure.db import session
 
 
 class PostgresPaymentRepository(PaymentRepository):
@@ -34,7 +33,7 @@ class PostgresPaymentRepository(PaymentRepository):
             except IntegrityError:
                 await session.rollback()
                 # Sí alguien ganó la carrera de idempotencia, dejamos que el use case lo maneje
-            raise
+                raise
 
     async def get_by_id(self, payment_id: str) -> Optional[Payment]:
         async with self._session_factory() as session:
