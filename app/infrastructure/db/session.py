@@ -2,27 +2,35 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import NullPool
 
-ENV = "test"  # Cambia a "production" en producción
+from app.core.config import settings
 
-DATABASE_URL = (
-    "postgresql+asyncpg://payments_user:payments_pass@localhost:5432/payments"
-)
+Base = declarative_base()
 
-if ENV == "test":
+if settings.TESTING:
     engine = create_async_engine(
-        DATABASE_URL,
-        echo=True,  # TODO: Cambiar a False en producción
+        settings.DATABASE_URL,
+        echo=True,
         poolclass=NullPool,
     )
-else:
+
+elif settings.PRODUCTION:
+
     engine = create_async_engine(
-        DATABASE_URL,
+        settings.DATABASE_URL,
+        pool_size=10,
+        max_overflow=20,
         echo=False,
     )
+
+else:  # development
+
+    engine = create_async_engine(
+        settings.DATABASE_URL,
+        echo=True,
+    )
+
 
 AsyncSessionLocal = async_sessionmaker(
     engine,
     expire_on_commit=False,
 )
-
-Base = declarative_base()

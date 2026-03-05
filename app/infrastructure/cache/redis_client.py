@@ -1,16 +1,7 @@
 import redis.asyncio as redis
+from app.core.config import settings
 
-import os
-import redis.asyncio as redis
+redis_client = None
 
-ENV = "test"  # Cambia a "production" en producción
-# ENV = os.getenv("ENV", "dev")
-
-if ENV == "test":
-    redis_client = None
-else:
-    redis_client = redis.Redis(
-        host="localhost",
-        port=6379,
-        decode_responses=True,
-    )
+if not settings.TESTING:
+    redis_client = redis.from_url(settings.REDIS_URL)
