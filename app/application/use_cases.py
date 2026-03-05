@@ -8,6 +8,10 @@ from app.application.dto import CreatePaymentCommand
 
 from app.infrastructure.cache.payment_cache import PaymentCache 
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 class CreatePayment:
     def __init__(self, repository: PaymentRepository):
         self.repository = repository
@@ -40,8 +44,10 @@ class GetPayment:
         # intentar cache
         cached = await self.cache.get(payment_id)
         if cached:
+            logger.info("payment_cache_hit", extra={"payment_id": payment_id})
             return cached
 
+        logger.info("payment_cache_miss", extra={"payment_id": payment_id})
         # ir a DB
         payment = await self.repository.get_by_id(payment_id)
 
