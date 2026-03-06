@@ -1,7 +1,30 @@
+[tool.poetry]
+name = "backend-payments-python"
+version = "0.1.0"
+description = "Payment processing backend implemented in Python using FastAPI, SQLAlchemy, and Redis."
+authors = ["LookAndCris <look.dev.aws@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "*"
+uvicorn = {extras = ["standard"], version = "*"}
+sqlalchemy = "*"
+asyncpg = "*"
+redis = "*"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+pytest-asyncio = "*"
+httpx = "*"
+pytest-cov = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope = "session"
-
 testpaths = ["test"]
-
 pythonpath = ["."]
