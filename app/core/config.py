@@ -36,16 +36,19 @@ class Settings(BaseSettings):
 
     @property
     def REDIS_URL(self):
-
         return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}"
-
-    @property
-    def DEBUG(self):
-        return self.ENV == "development"
 
     @property
     def TESTING(self):
         return self.ENV == "test"
+
+    @property
+    def PRODUCTION(self):
+        return self.ENV == "production"
+
+    @property
+    def DEVELOPMENT(self):
+        return self.ENV == "development"
 
 
 settings = Settings()
