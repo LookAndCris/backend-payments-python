@@ -6,10 +6,14 @@ from app.core.config import settings
 
 Base = declarative_base()
 
+
+# ---------- ENGINE ----------
+
 if settings.TESTING:
+
     engine = create_async_engine(
         settings.DATABASE_URL,
-        echo=True,
+        echo=False,
         poolclass=NullPool,
     )
 
@@ -17,9 +21,10 @@ elif settings.PRODUCTION:
 
     engine = create_async_engine(
         settings.DATABASE_URL,
+        echo=False,
         pool_size=10,
         max_overflow=20,
-        echo=False,
+        pool_pre_ping=True,
     )
 
 else:  # development
@@ -27,8 +32,11 @@ else:  # development
     engine = create_async_engine(
         settings.DATABASE_URL,
         echo=True,
+        pool_pre_ping=True,
     )
 
+
+# ---------- SESSION ----------
 
 AsyncSessionLocal = async_sessionmaker(
     engine,

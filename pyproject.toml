@@ -13,6 +13,8 @@ uvicorn = {extras = ["standard"], version = "*"}
 sqlalchemy = "*"
 asyncpg = "*"
 redis = "*"
+python-dotenv = "^1.2.2"
+pydantic-settings = "^2.13.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"

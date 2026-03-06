@@ -1,25 +1,51 @@
 import os
+from dotenv import load_dotenv
+from pydantic_settings import BaseSettings
+
+ENV = os.getenv("ENV", "development")
+
+if ENV == "test":
+    load_dotenv(".env.test")
+elif ENV == "production":
+    load_dotenv(".env.production")
+else:
+    load_dotenv(".env")
 
 
-class Settings:
+class Settings(BaseSettings):
 
-    ENV: str = os.getenv("ENV", "development")
+    ENV: str = "development"
 
-    DATABASE_URL: str = os.getenv(
-        "DATABASE_URL",
-        "postgresql+asyncpg://payments_user:payments_pass@localhost:5432/payments",
-    )
+    POSTGRES_HOST: str
+    POSTGRES_PORT: int
+    POSTGRES_DB: str
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
 
-    REDIS_URL: str = os.getenv(
-        "REDIS_URL",
-        "redis://localhost:6379",
-    )
+    REDIS_HOST: str
+    REDIS_PORT: int
 
-    DEBUG: bool = ENV == "development"
+    @property
+    def DATABASE_URL(self):
 
-    TESTING: bool = ENV == "test"
+        return (
+            f"postgresql+asyncpg://{self.POSTGRES_USER}:"
+            f"{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:"
+            f"{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        )
 
-    PRODUCTION: bool = ENV == "production"
+    @property
+    def REDIS_URL(self):
+
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}"
+
+    @property
+    def DEBUG(self):
+        return self.ENV == "development"
+
+    @property
+    def TESTING(self):
+        return self.ENV == "test"
 
 
 settings = Settings()
