@@ -277,6 +277,29 @@ files = [
 python-dotenv = "*"
 
 [[package]]
+name = "fakeredis"
+version = "2.34.1"
+description = "Python implementation of redis API, can be used for testing purposes."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "fakeredis-2.34.1-py3-none-any.whl", hash = "sha256:0107ec99d48913e7eec2a5e3e2403d1bd5f8aa6489d1a634571b975289c48f12"},
+    {file = "fakeredis-2.34.1.tar.gz", hash = "sha256:4ff55606982972eecce3ab410e03d746c11fe5deda6381d913641fbd8865ea9b"},
+]
+
+[package.dependencies]
+redis = {version = ">=4.3", markers = "python_version > \"3.8\""}
+sortedcontainers = ">=2"
+
+[package.extras]
+bf = ["pyprobables (>=0.6)"]
+cf = ["pyprobables (>=0.6)"]
+json = ["jsonpath-ng (>=1.6)"]
+lua = ["lupa (>=2.1)"]
+probabilistic = ["pyprobables (>=0.6)"]
+valkey = ["valkey (>=6)"]
+
+[[package]]
 name = "fastapi"
 version = "0.135.1"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
@@ -775,6 +798,23 @@ pytest = ">=7"
 testing = ["process-tests", "pytest-xdist", "virtualenv"]
 
 [[package]]
+name = "pytest-mock"
+version = "3.15.1"
+description = "Thin-wrapper around the mock package for easier use with pytest"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "pytest_mock-3.15.1-py3-none-any.whl", hash = "sha256:0a25e2eb88fe5168d535041d09a4529a188176ae608a6d249ee65abc0949630d"},
+    {file = "pytest_mock-3.15.1.tar.gz", hash = "sha256:1849a238f6f396da19762269de72cb1814ab44416fa73a8686deac10b0d87a0f"},
+]
+
+[package.dependencies]
+pytest = ">=6.2.5"
+
+[package.extras]
+dev = ["pre-commit", "pytest-asyncio", "tox"]
+
+[[package]]
 name = "python-dotenv"
 version = "1.2.2"
 description = "Read key-value pairs from a .env file and set them as environment variables"
@@ -888,6 +928,17 @@ jwt = ["pyjwt (>=2.9.0)"]
 ocsp = ["cryptography (>=36.0.1)", "pyopenssl (>=20.0.1)", "requests (>=2.31.0)"]
 otel = ["opentelemetry-api (>=1.39.1)", "opentelemetry-exporter-otlp-proto-http (>=1.39.1)", "opentelemetry-sdk (>=1.39.1)"]
 xxhash = ["xxhash (>=3.6.0,<3.7.0)"]
+
+[[package]]
+name = "sortedcontainers"
+version = "2.4.0"
+description = "Sorted Containers -- Sorted List, Sorted Dict, Sorted Set"
+optional = false
+python-versions = "*"
+files = [
+    {file = "sortedcontainers-2.4.0-py2.py3-none-any.whl", hash = "sha256:a163dcaede0f1c021485e957a39245190e74249897e2ae4b2aa38595db237ee0"},
+    {file = "sortedcontainers-2.4.0.tar.gz", hash = "sha256:25caa5a06cc30b6b83d11423433f65d1f9d76c4c6a0c90e3379eaa43b9bfdb88"},
+]
 
 [[package]]
 name = "sqlalchemy"
@@ -1326,4 +1377,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "137cea006fa7a1bde303d7c2f13f281c934a7127f07f523dff0a6fe238e9fe16"
+content-hash = "d621d12bece7c184be817b4cf3fa1ecc4d2f6345b3eaf074ecd1e5785c1fb00e"
