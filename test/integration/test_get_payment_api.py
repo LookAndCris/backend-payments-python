@@ -1,16 +1,6 @@
-import pytest
+async def test_get_payment(client, payment_payload):
 
-
-async def test_get_payment(client):
-
-    payload = {
-        "amount": 9000,
-        "currency": "COP",
-        "description": "Fetch payment",
-        "idempotency_key": "fetch-test",
-    }
-
-    create = await client.post("/payments", json=payload)
+    create = await client.post("/payments", json=payment_payload)
 
     payment_id = create.json()["id"]
 

@@ -7,23 +7,25 @@ from app.api.dependencies import (
     get_get_payment_use_case,
 )
 from app.domain.exceptions import PaymentNotFound
+from app.api.security.api_key import verify_api_key
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(verify_api_key)])
+
 
 @router.post(
     "/payments",
     response_model=PaymentResponse,
-    status_code=status.HTTP_201_CREATED
+    status_code=status.HTTP_201_CREATED,
 )
 async def create_payment(
     request: CreatePaymentRequest,
-    use_case: CreatePayment = Depends(get_create_payment_use_case)
+    use_case: CreatePayment = Depends(get_create_payment_use_case),
 ):
     command = CreatePaymentCommand(
         amount=request.amount,
         currency=request.currency,
         description=request.description,
-        idempotency_key=request.idempotency_key
+        idempotency_key=request.idempotency_key,
     )
 
     payment = await use_case.execute(command)
@@ -33,16 +35,16 @@ async def create_payment(
         amount=payment.amount,
         currency=payment.currency,
         description=payment.description,
-        status=payment.status.value
+        status=payment.status.value,
     )
+
 
 @router.get(
     "/payments/{payment_id}",
-    response_model=PaymentResponse
+    response_model=PaymentResponse,
 )
 async def get_payment(
-    payment_id: str,
-    use_case: GetPayment = Depends(get_get_payment_use_case)
+    payment_id: str, use_case: GetPayment = Depends(get_get_payment_use_case)
 ):
     try:
         payment = await use_case.execute(payment_id)
@@ -54,5 +56,5 @@ async def get_payment(
         amount=payment.amount,
         currency=payment.currency,
         description=payment.description,
-        status=payment.status.value
+        status=payment.status.value,
     )

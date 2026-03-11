@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     REDIS_HOST: str
     REDIS_PORT: int
 
+    API_KEY: str
+
     @property
     def DATABASE_URL(self):
 
