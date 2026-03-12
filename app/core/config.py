@@ -27,6 +27,10 @@ class Settings(BaseSettings):
 
     API_KEY: str
 
+    JWT_SECRET: str
+    JWT_ALGORITHM: str
+    JWT_EXPIRE_MINUTES: int
+
     @property
     def DATABASE_URL(self):
 

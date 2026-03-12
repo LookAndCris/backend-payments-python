@@ -8,8 +8,9 @@ from app.api.dependencies import (
 )
 from app.domain.exceptions import PaymentNotFound
 from app.api.security.api_key import verify_api_key
+from app.api.security.jwt_auth import verify_jwt
 
-router = APIRouter(dependencies=[Depends(verify_api_key)])
+router = APIRouter(dependencies=[Depends(verify_api_key), Depends(verify_jwt)])
 
 
 @router.post(
