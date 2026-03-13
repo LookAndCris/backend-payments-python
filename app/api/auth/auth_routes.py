@@ -1,28 +1,31 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
-from app.api.auth.auth_schemas import LoginRequest, TokenResponse
-from app.infrastructure.security.jwt_service import create_access_token
-from app.infrastructure.security.password_hasher import verify_password
+from app.infrastructure.db.user.user_repository import UserRepository
+from app.application.auth.auth_use_cases import RegisterUser, LoginUser
+
+from .auth_schemas import RegisterRequest, LoginRequest, TokenResponse
+
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
+repository = UserRepository()
 
-# usuario mock temporal
-FAKE_USER = {
-    "email": "admin@example.com",
-    "password_hash": "$2b$12$RdIqwUvzZxCHMbHsE4mBJe01iDcxHUa3wF2HmoDA63cojxUdXhG0q",
-}
+
+@router.post("/register")
+async def register(request: RegisterRequest):
+
+    use_case = RegisterUser(repository)
+
+    user = await use_case.execute(request.email, request.password)
+
+    return user
 
 
 @router.post("/login", response_model=TokenResponse)
 async def login(request: LoginRequest):
 
-    if request.email != FAKE_USER["email"]:
-        raise HTTPException(status_code=401)
+    use_case = LoginUser(repository)
 
-    if not verify_password(request.password, FAKE_USER["password_hash"]):
-        raise HTTPException(status_code=401)
-
-    token = create_access_token({"sub": request.email})
+    token = await use_case.execute(request.email, request.password)
 
     return TokenResponse(access_token=token)
