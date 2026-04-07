@@ -6,11 +6,15 @@ from app.infrastructure.logging.logger import setup_logging
 from app.infrastructure.middleware.timing import TimingMiddleware
 from app.api.auth.auth_routes import router as auth_router
 
+from slowapi.middleware import SlowAPIMiddleware
+from app.infrastructure.rate_limit.limiter import limiter
+
 setup_logging()
 
 app = FastAPI(title="Payment Service")
-
+app.state.limiter = limiter
 app.add_middleware(TimingMiddleware)
+app.add_middleware(SlowAPIMiddleware)
 
 app.include_router(router)
 app.include_router(auth_router)
